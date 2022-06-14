@@ -4,4 +4,4 @@
 
 ### General Info
 ***
-Librería para graficar los resultados de pymc3 
+....
