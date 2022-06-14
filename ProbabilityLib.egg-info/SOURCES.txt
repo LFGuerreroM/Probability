@@ -9,3 +9,5 @@ ProbabilityLib.egg-info/requires.txt
 ProbabilityLib.egg-info/top_level.txt
 dist/ProbabilityLib-0.0.1-py3-none-any.whl
 dist/ProbabilityLib-0.0.1.tar.gz
+dist/ProbabilityLib-0.0.2-py3-none-any.whl
+dist/ProbabilityLib-0.0.2.tar.gz
