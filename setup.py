@@ -4,7 +4,7 @@ from setuptools import find_packages, setup
 
 HERE = pathlib.Path(__file__).parent
 
-VERSION = '0.0.1' #
+VERSION = '0.0.2' #
 PACKAGE_NAME = 'ProbabilityLib' #Ojo es el nombre de la libreria y de la carpeta
 AUTHOR = 'L Felipe Guerrero'
 AUTHOR_EMAIL = 'felipe.guerrero@correounivalle.edu.co' 
