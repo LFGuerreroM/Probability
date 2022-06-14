@@ -43,6 +43,25 @@ def plottrace(trace, burn = 500 ,fontsize=12,figsize=(8,14) , titles = None):
   fig.align_ylabels(ax[:, 1])
   return fig, ax
 
-def prueba():
-  print('Sirve')
-  
+def version():
+  print('ProbabilityLib version = 0.0.1')
+
+def sca_matrix_plot(trace, sample = 1000, figsize=(9,9), fonsize=12):
+  keys = ['E_', 'fy_', 'esh_', 'eu_', 'C1_', 'Ey_', 'fu_','chol_stds']
+  dataframe = pm.trace_to_dataframe(trace,varnames = keys)[-sample:]
+  dataframe.rename(columns={'E_': '$E [MPa]$', 'fy_':'$f_y[MPa]$', 'esh_':'$\epsilon_{sh}$',
+                            'eu_':'$\epsilon_u$', 'C1_':'$C_1$', 'Ey_':'$E_y[MPa]$', 
+                            'fu_':'$f_u[MPa]$','chol_stds__0':'$chol-\sigma_0$', 'chol_stds__1':'$chol-\sigma_1$', 'chol_stds__2':'$chol-\sigma_2$'},inplace=True)
+  scatter_matrix(dataframe, figsize=figsize,grid=True,alpha=0.25)
+  fig = plt.gcf()
+  fig.align_labels() 
+  return dataframe
+
+def trace_to_df(trace,varnames = None, sample = 1000):
+  if varnames is None:
+    varnames = trace.varnames
+  dataframe = pm.trace_to_dataframe(trace,varnames = varnames)[-sample:]
+  dataframe.rename(columns={'E_': '$E [MPa]$', 'fy_':'$f_y[MPa]$', 'esh_':'$\epsilon_{sh}$',
+                            'eu_':'$\epsilon_u$', 'C1_':'$C_1$', 'Ey_':'$E_y[MPa]$', 
+                            'fu_':'$f_u[MPa]$','chol_stds__0':'$chol-\sigma_0$', 'chol_stds__1':'$chol-\sigma_1$', 'chol_stds__2':'$chol-\sigma_2$'},inplace=True)
+  return dataframe
