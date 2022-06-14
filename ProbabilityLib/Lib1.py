@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sb
 from scipy import stats
+import pymc3 as pm
 
 def plottrace(trace, burn = 500 ,fontsize=12,figsize=(8,14) , titles = None):
   fig, ax = plt.subplots(8, 2,figsize=figsize, gridspec_kw={'width_ratios': [1.6, 1]})  # ,sharex=True, sharey=True)

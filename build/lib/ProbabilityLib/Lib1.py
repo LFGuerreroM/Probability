@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sb
 from scipy import stats
+import pymc3 as pm
 
 def plottrace(trace, burn = 500 ,fontsize=12,figsize=(8,14) , titles = None):
   fig, ax = plt.subplots(8, 2,figsize=figsize, gridspec_kw={'width_ratios': [1.6, 1]})  # ,sharex=True, sharey=True)
@@ -65,7 +66,7 @@ def sca_matrix_plot(trace, sample = 1000, figsize=(9,9), fonsize=12):
   dataframe.rename(columns={'E_': '$E [MPa]$', 'fy_':'$f_y[MPa]$', 'esh_':'$\epsilon_{sh}$',
                             'eu_':'$\epsilon_u$', 'C1_':'$C_1$', 'Ey_':'$E_y[MPa]$', 
                             'fu_':'$f_u[MPa]$','chol_stds__0':'$chol-\sigma_0$', 'chol_stds__1':'$chol-\sigma_1$', 'chol_stds__2':'$chol-\sigma_2$'},inplace=True)
-  scatter_matrix(dataframe, figsize=figsize,grid=True,alpha=0.25)
+  #scatter_matrix(dataframe, figsize=figsize,grid=True,alpha=0.25)
   fig = plt.gcf()
   fig.align_labels() 
   return dataframe
