@@ -27,7 +27,7 @@ def plot_posterior(trace, varnames = None,  burn = None, fontsize=12, figsize=No
     varnames = trace.varnames
   fig, ax = plt.subplots(len(varnames), 1,figsize=figsize, gridspec_kw={'width_ratios': [1]},constrained_layout=True,)  
   for i in range(len(varnames)):
-    ax[i].hist(dataframe[varnames[i]], bins=50, density=True, alpha=0.5, color='black', label='Posterior')
+    ax[i].hist(trace[varnames[i]], bins=50, density=True, alpha=0.5, color='black', label='Posterior')
     ax[i].set_ylabel('$'+ylabel+'$',fontsize=fontsize)
     ax[i].set_title('$'+varnames[i]+'$',fontsize=fontsize)
     ax[i].locator_params(tight=True, nbins=4) 
