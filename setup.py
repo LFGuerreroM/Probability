@@ -20,8 +20,12 @@ LONG_DESC_TYPE = "text/markdown"
 INSTALL_REQUIRES = [
       'pandas',
       'matplotlib',
+      'pymc3',
+      'numpy',
+      'seaborn',
+      'scipy',
+      'pickle',
       ]
-
 setup(
     name=PACKAGE_NAME,
     version=VERSION,
