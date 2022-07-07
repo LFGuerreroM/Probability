@@ -24,7 +24,6 @@ INSTALL_REQUIRES = [
       'numpy',
       'seaborn',
       'scipy',
-      'pickle',
       ]
 setup(
     name=PACKAGE_NAME,
