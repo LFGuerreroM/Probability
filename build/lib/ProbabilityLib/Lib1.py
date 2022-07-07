@@ -26,8 +26,13 @@ def plot_posterior(trace, varnames = None,  burn = None, fontsize=12, figsize=No
   if varnames is None:
     varnames = trace.varnames
   fig, ax = plt.subplots(len(varnames), 1,figsize=figsize, gridspec_kw={'width_ratios': [1]},constrained_layout=True,)  
+  
   for i in range(len(varnames)):
-    ax[i].hist(trace[varnames[i]], bins=50, density=True, alpha=0.5, color='black', label='Posterior')
+    samples = trace.get_values(varname=varnames[i],burn=burn)
+    smin, smax = np.min(samples), np.max(samples)
+    x = np.linspace(smin, smax, 80)
+    y = stats.gaussian_kde(samples)(x)
+    ax[i].plot(x, y)    
     ax[i].set_ylabel('$'+ylabel+'$',fontsize=fontsize)
     ax[i].set_title('$'+varnames[i]+'$',fontsize=fontsize)
     ax[i].locator_params(tight=True, nbins=4) 
