@@ -1,2 +1,6 @@
 pandas
 matplotlib
+pymc3
+numpy
+seaborn
+scipy

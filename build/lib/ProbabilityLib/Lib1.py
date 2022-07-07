@@ -4,16 +4,69 @@ import matplotlib.pyplot as plt
 import seaborn as sb
 from scipy import stats
 import pymc3 as pm
+import pickle
 
-def plottrace(trace, burn = 500 ,fontsize=12,figsize=(8,14) , titles = None):
-  fig, ax = plt.subplots(8, 2,figsize=figsize, gridspec_kw={'width_ratios': [1.6, 1]})  # ,sharex=True, sharey=True)
+def savetracePYMC(name, trace,ppc = None):
+  datos = [trace,ppc]
+  f = open(name+'.pckl','wb')
+  pickle.dump(datos,f)
+  f.close()
+
+def loadtracePYMC(name):
+  f = open(name+'.pckl','rb')
+  datos = pickle.load(f)
+  f.close()
+  trace = datos[0]
+  ppc = datos[1]
+  return trace,ppc
+
+def plot_posterior(trace, varnames = None,  burn = None, fontsize=12, figsize=None, ylabel='Probability'):
+  if figsize==None:
+    figsize = (8,14)
+  if varnames is None:
+    varnames = trace.varnames
+  fig, ax = plt.subplots(len(varnames), 1,figsize=figsize, gridspec_kw={'width_ratios': [1]},constrained_layout=True,)  
+  for i in range(len(varnames)):
+    ax[i].hist(trace[varnames[i]], bins=50, density=True, alpha=0.5, color='black', label='Posterior')
+    ax[i].set_ylabel('$'+ylabel+'$',fontsize=fontsize)
+    ax[i].set_title('$'+varnames[i]+'$',fontsize=fontsize)
+    ax[i].locator_params(tight=True, nbins=4) 
+  fig.tight_layout(pad=0.4)
+  fig.align_ylabels(ax[:, :])
+  return fig, ax
+
+def plottrace(trace, burn = 500 ,fontsize=12,figsize=None, plotsamples=True,chains=None,ylabel='Probability'):
+  if figsize==None:
+    figsize = (8,14)
+  if plotsamples:
+    nf = len(param)
+    nc = 2
+    wratios = [1.6, 1]
+  else:
+    nc = 4
+    nf = 2
+    wratios = [1, 1, 1, 1]
+  if chains==None:
+    chains=trace.chains
+  fig, ax = plt.subplots(nf, nc,figsize=figsize, gridspec_kw={'width_ratios': wratios},constrained_layout=True,)  
+  titles = ['E [MPa]', '\sigma_y [MPa]', '\epsilon_{sh}', '\epsilon_u', 'C_1', 'E_y [MPa]', '\sigma_u [MPa]','stds [MPa]']
   param =['E_', 'fy_', 'esh_', 'eu_', 'C1_', 'Ey_', 'fu_','chol_stds']
   lt = ['-','--',':','-.']
   cm = plt.cm.tab20c(np.linspace(0,1,20))
+  fi = 0
+  ci = -1
   for i in range(len(param)):
     val = 1
     smin, smax = 10e10,0  
-    for  chain in trace.chains:     
+    if plotsamples:
+      fi = i
+      ci = 0
+    else:
+      if i==4:
+        fi = 1
+        ci = -1
+      ci = ci +1
+    for  chain in chains:     
       samples = trace.get_values(varname=param[i],chains=chain,burn=burn) 
       if param[i]=='chol_stds':
         val = 3
@@ -28,25 +81,29 @@ def plottrace(trace, burn = 500 ,fontsize=12,figsize=(8,14) , titles = None):
           smax = smax2
         x = np.linspace(smin, smax, 80)
         y = stats.gaussian_kde(samples)(x)
-        ax[i,0].plot(x, y,lt[chain],color = cm[chain+val_i*4])
+        ax[fi,ci].plot(x, y,lt[chain],color = cm[chain+val_i*4])
         if (smax-smin)<0.001:
-          ax[i,0].set_xticks(np.linspace(smin, smax, 4)) 
+          ax[fi,ci].set_xticks(np.linspace(smin, smax, 4),fontsize=fontsize-2) 
         else:
-          ax[i,0].set_xticks(np.linspace(smin, smax, 5)) 
-        ax[i,1].plot(samples,lt[chain],linewidth=.7,alpha=.7,color = cm[chain+val_i*4])
-    ax[i,0].get_yaxis().set_visible(False)
-    ax[i,0].set_ylabel('Frequency',fontsize=fontsize)
-    ax[i,1].set_ylabel('Sample value',fontsize=fontsize-2)
-    ax[i,0].set_title('$'+titles[i]+'$',fontsize=fontsize)
-    ax[i,1].set_title('$'+titles[i]+'$',fontsize=fontsize)
-    ax[i,0].set_ylabel('Frequency',fontsize=fontsize)
+          ax[fi,ci].set_xticks(np.linspace(smin, smax, 5),fontsize=fontsize-2) 
+        if plotsamples:
+          ax[fi,1].plot(samples,lt[chain],linewidth=.7,alpha=.7,color = cm[chain+val_i*4])
+      ax[fi,ci].set_ylabel('$'+ylabel+'$',fontsize=fontsize,)
+
+    ax[fi,ci].get_yaxis().set_visible(False)
+    ax[fi,ci].set_title('$'+titles[i]+'$',fontsize=fontsize)
+    ax[fi,ci].locator_params(tight=True, nbins=4) 
+    if plotsamples:
+      ax[fi,1].set_ylabel('Sample value',fontsize=fontsize-2)
+      ax[fi,1].set_title('$'+titles[i]+'$',fontsize=fontsize)
     
-  fig.tight_layout()
-  fig.align_ylabels(ax[:, 1])
+  fig.tight_layout(pad=0.4)
+  fig.align_ylabels(ax[:, :])
+  
   return fig, ax
 
 def version():
-  print('ProbabilityLib version = 0.0.1')
+  print('ProbabilityLib version = 0.0.2a')
 
 
 
