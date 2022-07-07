@@ -29,6 +29,7 @@ def plot_posterior(trace, varnames = None,  burn = None, fontsize=12, figsize=No
   
   for i in range(len(varnames)):
     samples = trace.get_values(varname=varnames[i],burn=burn)
+    smin, smax = np.min(samples), np.max(samples)
     x = np.linspace(smin, smax, 80)
     y = stats.gaussian_kde(samples)(x)
     ax[i].plot(x, y)    
