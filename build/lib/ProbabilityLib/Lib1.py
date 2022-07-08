@@ -5,6 +5,7 @@ import seaborn as sb
 from scipy import stats
 import pymc3 as pm
 import pickle
+import arviz as az
 
 def savetracePYMC(name, trace,ppc = None):
   datos = [trace,ppc]
