@@ -20,24 +20,67 @@ def loadtracePYMC(name):
   ppc = datos[1]
   return trace,ppc
 
-def plot_posterior(trace, varnames = None,  burn = None, fontsize=12, figsize=None, ylabel='Probability'):
-  if figsize==None:
-    figsize = (8,14)
+def plot_posterior(trace, varnames = None, grid = None, burn = None, fontsize=12, figsize=None, ylabel='Probability'):
   if varnames is None:
     varnames = trace.varnames
-  fig, ax = plt.subplots(len(varnames), 1,figsize=figsize, gridspec_kw={'width_ratios': [1]},constrained_layout=True,)  
-  
-  for i in range(len(varnames)):
-    samples = trace.get_values(varname=varnames[i],burn=burn)
+  ivn = []
+  count_vn = 0
+  for vn in varnames:
+    if vn[-11:]!="_interval__":
+      ivn.append(count_vn)
+    count_vn +=1
+  if grid==None:  
+    ncols = round(len(ivn)**(0.5))
+    nrows = round(len(ivn)**(0.5))
+    if len(ivn)==3:
+      nrows = 1
+      ncols = 3
+  else:
+    ncols = grid[1]
+    nrows = grid[0]
+  if figsize==None:
+    if len(ivn)==2:
+      nrows = 1
+    figsize = (5*ncols,4*nrows)
+
+  fig, ax = plt.subplots(nrows =nrows , ncols = ncols,figsize=figsize, constrained_layout=True)  
+  nc = -1
+  nr = 0
+  for i in range(len(ivn)):
+    nc += 1
+    if nc==ncols:
+      nc = 0
+      nr += 1
+    if nrows==1:
+      axi = ax[nc]
+    elif ncols==1:
+      axi = ax[nr]
+    else:
+      axi = ax[nr][nc]
+    v_name = varnames[ivn[i]]
+    samples = trace.get_values(varname=v_name,burn=burn)
     smin, smax = np.min(samples), np.max(samples)
-    x = np.linspace(smin, smax, 80)
-    y = stats.gaussian_kde(samples)(x)
-    ax[i].plot(x, y)    
-    ax[i].set_ylabel('$'+ylabel+'$',fontsize=fontsize)
-    ax[i].set_title('$'+varnames[i]+'$',fontsize=fontsize)
-    ax[i].locator_params(tight=True, nbins=4) 
+    x = np.linspace(smin, smax, 70)
+    y = stats.gaussian_kde(samples)(x)  
+    axi.plot(x, y)  
+
+    textcolor = 'k'
+    varstats = az.summary(trace, var_names=v_name,kind='stats')
+    mean = varstats['mean'].values[0]
+    axi.text(mean,  np.max(y), 'mean = '+str(mean), horizontalalignment='center',fontsize=fontsize, color=textcolor)
+    hdi = [varstats['hdi_3%'].values[0],varstats['hdi_97%'].values[0]]
+    axi.text(mean,  np.max(y)/2, '94 % HDI', horizontalalignment='center',fontsize=fontsize, color=textcolor)
+    axi.plot(hdi,[0,0],'k', linewidth=5)
+    axi.text(hdi[0], 0, str(hdi[0])+' ', horizontalalignment='right',fontsize=fontsize, color=textcolor)
+    axi.text(hdi[1], 0,' '+str(hdi[1]), horizontalalignment='left',fontsize=fontsize, color=textcolor)
+    axi.grid(color='gray', linestyle='-.', linewidth=0.5, alpha=0.5)
+
+    axi.set_yticks([])
+    axi.set_ylabel('$'+ylabel+'$',fontsize=fontsize-2)
+    axi.set_title('$'+v_name+'$',fontsize=fontsize)
+
   fig.tight_layout(pad=0.4)
-  fig.align_ylabels(ax[:, :])
+  fig.align_ylabels(ax[:])
   return fig, ax
 
 def plottrace(trace, burn = 500 ,fontsize=12,figsize=None, plotsamples=True,chains=None,ylabel='Probability'):
