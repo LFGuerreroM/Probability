@@ -27,7 +27,9 @@ def plot_posterior(trace, varnames = None, grid = None, burn = None, fontsize=12
   ivn = []
   count_vn = 0
   for vn in varnames:
-    if vn[-11:]!="_interval__":
+    if vn[-11:]!="_interval__" and vn[:4]!="chol" and  vn[:3]!="cov":
+      ivn.append(count_vn)
+    if vn=="chol_stds":
       ivn.append(count_vn)
     count_vn +=1
   if grid==None:  
@@ -60,6 +62,11 @@ def plot_posterior(trace, varnames = None, grid = None, burn = None, fontsize=12
       axi = ax[nr][nc]
     v_name = varnames[ivn[i]]
     samples = trace.get_values(varname=v_name,burn=burn)
+    try:
+      if len(samples[0])>1:
+        samples = np.transpose(samples)[0]
+    except:
+      0
     smin, smax = np.min(samples), np.max(samples)
     x = np.linspace(smin, smax, 70)
     y = stats.gaussian_kde(samples)(x)  
