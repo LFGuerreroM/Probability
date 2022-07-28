@@ -82,7 +82,8 @@ def plot_posterior(trace, varnames = None, grid = None, burn = None, fontsize=12
     axi.grid(color='gray', linestyle='-.', linewidth=0.5, alpha=0.5)
 
     axi.set_yticks([])
-    axi.set_ylabel('$'+ylabel+'$',fontsize=fontsize-2)
+    axi.set_xticks(fontsize=fontsize)
+    axi.set_ylabel('$'+ylabel+'$',fontsize=fontsize)
     axi.set_xlabel('$'+v_name+'$',fontsize=fontsize)
 
   fig.tight_layout(pad=0.4)
