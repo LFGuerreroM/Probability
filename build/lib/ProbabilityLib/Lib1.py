@@ -88,8 +88,21 @@ def plot_posterior(trace, varnames = None, grid = None, burn = None, fontsize=12
     axi.text(hdi[1], 0,' '+str(hdi[1]), horizontalalignment='left',fontsize=fontsize, color=textcolor)
     axi.grid(color='gray', linestyle='-.', linewidth=0.5, alpha=0.5)
 
+      
+    ran = smax-smin
+    ndr = 0
+    if ran <10:
+      ndr = 1
+    elif ran <1:
+      ndr = 3
+    elif ran <0.1:
+      ndr = 4
+    elif ran <0.0001:
+      ndr = 6
+    smin = round(smin - 0.05*ran,ndr)
+    smax = round(smax + 0.05*ran, ndr) 
+    axi.set_xticks(np.linspace(smin,smax, 5), fontsize=fontsize)
     axi.set_yticks([])
-    axi.set_xticks(fontsize=fontsize)
     axi.set_ylabel('$'+ylabel+'$',fontsize=fontsize)
     axi.set_xlabel('$'+v_name+'$',fontsize=fontsize)
 
@@ -165,7 +178,7 @@ def plottrace(trace, burn = 500 ,fontsize=12,figsize=None, plotsamples=True,chai
   return fig, ax
 
 def version():
-  print('ProbabilityLib version = 0.0.2a')
+  print('ProbabilityLib version = 0.0.2b')
 
 
 
